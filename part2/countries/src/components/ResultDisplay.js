@@ -13,17 +13,19 @@ const CountryDisplay = ({ country }) => (
   </div>
 );
 
-const CountryListDisplay = ({ countries }) => (
+const CountryListDisplay = ({ countries, handleClick }) => (
   <div>
     {countries.map(country => (
-      <div key={country.name}>{country.name}</div>
+      <div key={country.name}>
+        {country.name} <button onClick={() => handleClick(country.name)}>show</button>
+      </div>
     ))}
   </div>
 );
 
 const TooManyMessage = () => <div>Too many matches, specify another filter</div>;
 
-const ResultDisplay = ({ countries }) => {
+const ResultDisplay = ({ countries, handleShowClick }) => {
   if (countries.length === 0) {
     return null;
   }
@@ -33,7 +35,7 @@ const ResultDisplay = ({ countries }) => {
   }
 
   if (countries.length <= 10) {
-    return <CountryListDisplay countries={countries} />;
+    return <CountryListDisplay countries={countries} handleClick={handleShowClick} />;
   }
 
   return <TooManyMessage />;

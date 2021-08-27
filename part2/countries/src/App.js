@@ -25,10 +25,14 @@ const App = () => {
     });
   }, []);
 
+  const handleShowClick = countryName => {
+    setFilter(countryName);
+  };
+
   return (
     <div>
       <Filter value={filter} handleChange={({ target }) => setFilter(target.value)} />
-      <ResultDisplay countries={filteredCountries} />
+      <ResultDisplay countries={filteredCountries} handleShowClick={handleShowClick} />
     </div>
   );
 };
