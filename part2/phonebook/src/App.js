@@ -14,11 +14,11 @@ const App = () => {
     personService.getAll().then(persons => setPersons(persons));
   }, []);
 
-  const filteredPersons = persons.filter(person =>
-    person.name.toLowerCase().includes(filter.toLowerCase())
+  const filteredPersons = persons.filter(({ name }) =>
+    name.toLowerCase().includes(filter.toLowerCase())
   );
 
-  const personExists = () => persons.map(person => person.name).indexOf(newName) !== -1;
+  const personExists = () => persons.map(({ name }) => name).indexOf(newName) !== -1;
 
   const handleSubmit = event => {
     event.preventDefault();
