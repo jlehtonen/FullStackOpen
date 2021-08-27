@@ -18,13 +18,25 @@ const App = () => {
     name.toLowerCase().includes(filter.toLowerCase())
   );
 
-  const personExists = () => persons.map(({ name }) => name).indexOf(newName) !== -1;
+  const existingPerson = persons.find(({ name }) => name === newName);
 
   const handleSubmit = event => {
     event.preventDefault();
 
-    if (personExists()) {
-      alert(`${newName} is already added to phonebook`);
+    if (existingPerson) {
+      const confirmMessage = `${newName} is already added to phonebook, replace the old number with a new one?`;
+      if (window.confirm(confirmMessage)) {
+        personService
+          .update({ ...existingPerson, number: newNumber })
+          .then(updatedPerson => {
+            const newPersons = persons.map(person =>
+              person.id === updatedPerson.id ? updatedPerson : person
+            );
+            setPersons(newPersons);
+            setNewName("");
+            setNewNumber("");
+          });
+      }
       return;
     }
 
