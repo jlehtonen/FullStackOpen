@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import personService from "./services/persons";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
@@ -11,9 +11,7 @@ const App = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then(response => {
-      setPersons(response.data);
-    });
+    personService.getAll().then(persons => setPersons(persons));
   }, []);
 
   const filteredPersons = persons.filter(person =>
@@ -30,13 +28,11 @@ const App = () => {
       return;
     }
 
-    axios
-      .post("http://localhost:3001/persons", { name: newName, number: newNumber })
-      .then(response => {
-        setPersons([...persons, response.data]);
-        setNewName("");
-        setNewNumber("");
-      });
+    personService.create({ name: newName, number: newNumber }).then(addedPerson => {
+      setPersons([...persons, addedPerson]);
+      setNewName("");
+      setNewNumber("");
+    });
   };
 
   const handleNameChange = ({ target }) => {
