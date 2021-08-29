@@ -1,10 +1,10 @@
-const Notification = ({ notification }) => {
+const Notification = ({ notification, type }) => {
   if (!notification) {
     return null;
   }
 
   const styles = {
-    color: "green",
+    color: type === "success" ? "green" : "red",
     background: "lightgrey",
     fontSize: 20,
     borderStyle: "solid",
