@@ -63,12 +63,17 @@ const App = () => {
       return;
     }
 
-    personService.create({ name: newName, number: newNumber }).then(addedPerson => {
-      setPersons([...persons, addedPerson]);
-      setNewName("");
-      setNewNumber("");
-      showNotification(`Added ${addedPerson.name}`);
-    });
+    personService
+      .create({ name: newName, number: newNumber })
+      .then(addedPerson => {
+        setPersons([...persons, addedPerson]);
+        setNewName("");
+        setNewNumber("");
+        showNotification(`Added ${addedPerson.name}`);
+      })
+      .catch(error => {
+        showNotification(error.response.data.error, "error");
+      });
   };
 
   const handleNameChange = ({ target }) => {
