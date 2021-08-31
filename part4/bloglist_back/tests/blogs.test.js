@@ -26,6 +26,18 @@ test("each blog returned by GET /api/blogs has an id field", async () => {
   });
 });
 
+test("POST /api/blogs increases the number of blogs by one", async () => {
+  const newBlog = {
+    title: "Canonical string reduction",
+    author: "Edsger W. Dijkstra",
+    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+    likes: 12,
+  };
+
+  await api.post("/api/blogs").send(newBlog);
+  expect(await helper.blogsInDb()).toHaveLength(helper.initialBlogs.length + 1);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
