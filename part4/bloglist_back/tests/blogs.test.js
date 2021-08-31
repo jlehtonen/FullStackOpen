@@ -51,6 +51,26 @@ test("likes default to 0 on new blogs if there is no likes field in the POST pay
   expect(addedBlog.likes).toBe(0);
 });
 
+test("POST /api/blogs fails with status code 400 if the payload doesn't have a title field", async () => {
+  const newBlog = {
+    author: "Edsger W. Dijkstra",
+    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+    likes: 12,
+  };
+
+  await api.post("/api/blogs").send(newBlog).expect(400);
+});
+
+test("POST /api/blogs fails with status code 400 if the payload doesn't have a url field", async () => {
+  const newBlog = {
+    title: "Canonical string reduction",
+    author: "Edsger W. Dijkstra",
+    likes: 12,
+  };
+
+  await api.post("/api/blogs").send(newBlog).expect(400);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });

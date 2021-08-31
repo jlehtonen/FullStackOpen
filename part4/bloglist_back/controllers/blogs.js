@@ -7,6 +7,10 @@ blogsRouter.get("/", async (req, res) => {
 });
 
 blogsRouter.post("/", async (req, res) => {
+  if (!req.body.hasOwnProperty("title") || !req.body.hasOwnProperty("url")) {
+    return res.status(400).end();
+  }
+
   const blog = new Blog({ likes: 0, ...req.body });
   const savedBlog = await blog.save();
   res.status(201).json(savedBlog);
