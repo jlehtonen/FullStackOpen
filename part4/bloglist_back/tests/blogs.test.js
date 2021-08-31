@@ -83,6 +83,13 @@ test("Trying to delete a nonexisting blog keeps the number of blogs unchanged", 
   expect(await helper.blogsInDb()).toHaveLength(helper.initialBlogs.length);
 });
 
+test("Updating likes of a blog works as expected", async () => {
+  const blog = await helper.getBlogByTitle(helper.initialBlogs[0].title);
+  await api.put(`/api/blogs/${blog.id}`).send({ ...blog, likes: blog.likes + 1 });
+  const updatedBlog = await Blog.findById(blog.id);
+  expect(updatedBlog.likes).toBe(blog.likes + 1);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
