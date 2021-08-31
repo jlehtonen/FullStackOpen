@@ -38,6 +38,19 @@ test("POST /api/blogs increases the number of blogs by one", async () => {
   expect(await helper.blogsInDb()).toHaveLength(helper.initialBlogs.length + 1);
 });
 
+test("likes default to 0 on new blogs if there is no likes field in the POST payload", async () => {
+  const newBlog = {
+    title: "Canonical string reduction",
+    author: "Edsger W. Dijkstra",
+    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+  };
+
+  await api.post("/api/blogs").send(newBlog);
+  const blogsInDb = await helper.blogsInDb();
+  const addedBlog = blogsInDb.find(blog => blog.title === newBlog.title);
+  expect(addedBlog.likes).toBe(0);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
