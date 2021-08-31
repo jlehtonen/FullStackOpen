@@ -19,6 +19,13 @@ test("GET /api/blogs returns correct number of blogs in JSON format", async () =
   expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
 
+test("each blog returned by GET /api/blogs has an id field", async () => {
+  const response = await api.get("/api/blogs");
+  response.body.forEach(blog => {
+    expect(blog.id).toBeDefined();
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
