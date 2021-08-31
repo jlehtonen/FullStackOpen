@@ -20,7 +20,25 @@ const blogsInDb = async () => {
   return blogs.map(blog => blog.toJSON());
 };
 
+const getBlogByTitle = async title => {
+  const blog = await Blog.findOne({ title });
+  return blog.toJSON();
+};
+
+const nonExistingId = async () => {
+  const blog = new Blog({
+    title: "Nonexisting blog",
+    author: "John Doe",
+    url: "http://nonexistingblog.com",
+  });
+  await blog.save();
+  await blog.remove();
+  return blog._id.toString();
+};
+
 module.exports = {
   initialBlogs,
   blogsInDb,
+  getBlogByTitle,
+  nonExistingId,
 };

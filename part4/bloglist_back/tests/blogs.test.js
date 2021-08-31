@@ -71,6 +71,18 @@ test("POST /api/blogs fails with status code 400 if the payload doesn't have a u
   await api.post("/api/blogs").send(newBlog).expect(400);
 });
 
+test("Deleting an existing blog causes the number of blogs to decrease by one", async () => {
+  const blog = await helper.getBlogByTitle(helper.initialBlogs[0].title);
+  await api.delete(`/api/blogs/${blog.id}`);
+  expect(await helper.blogsInDb()).toHaveLength(helper.initialBlogs.length - 1);
+});
+
+test("Trying to delete a nonexisting blog keeps the number of blogs unchanged", async () => {
+  const nonExistingId = await helper.nonExistingId();
+  await api.delete(`/api/blogs/${nonExistingId}`);
+  expect(await helper.blogsInDb()).toHaveLength(helper.initialBlogs.length);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
