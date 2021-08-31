@@ -100,3 +100,19 @@ describe("favorite blog", () => {
     });
   });
 });
+
+describe("mostBlogs", () => {
+  test("returns the author of the only blog in a list with one blog", () => {
+    expect(listHelper.mostBlogs(listWithOneBlog)).toEqual({
+      author: listWithOneBlog[0].author,
+      blogs: 1,
+    });
+  });
+
+  test("returns the author with most blogs in a list with many blogs", () => {
+    expect(listHelper.mostBlogs(listWithManyBlogs)).toEqual({
+      author: "Robert C. Martin",
+      blogs: 3,
+    });
+  });
+});
