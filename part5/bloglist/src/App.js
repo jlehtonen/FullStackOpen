@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import LoginForm from "./components/LoginForm";
 import BlogList from "./components/BlogList";
+import NewBlogForm from "./components/NewBlogForm";
+import LoggedIndicator from "./components/LoggedIndicator";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -27,6 +29,7 @@ const App = () => {
 
     const user = await loginService.login(username, password);
     window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
+    blogService.setToken(user.token);
     setUser(user);
     setUsername("");
     setPassword("");
@@ -35,6 +38,12 @@ const App = () => {
   const handleLogout = async => {
     window.localStorage.removeItem("loggedBloglistUser");
     setUser(null);
+  };
+
+  const handleNewBlog = async (title, author, url) => {
+    console.log(title, author, url);
+    const blog = await blogService.create(title, author, url);
+    setBlogs([...blogs, blog]);
   };
 
   if (user === null) {
@@ -49,7 +58,14 @@ const App = () => {
     );
   }
 
-  return <BlogList blogs={blogs} user={user} handleLogout={handleLogout} />;
+  return (
+    <div>
+      <h2>blogs</h2>
+      <LoggedIndicator user={user} handleLogout={handleLogout} />
+      <NewBlogForm handleSubmit={handleNewBlog} />
+      <BlogList blogs={blogs} />
+    </div>
+  );
 };
 
 export default App;
