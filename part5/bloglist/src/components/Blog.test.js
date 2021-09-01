@@ -58,3 +58,36 @@ test("Blog renders title, author, url and likes when the button to show all info
   expect(component.container).toHaveTextContent("url");
   expect(component.container).toHaveTextContent("0");
 });
+
+test("Like handler is called twice when the like button is pressed twice", () => {
+  const blog = {
+    title: "title",
+    author: "author",
+    url: "url",
+    likes: 0,
+    user: {
+      id: "123",
+      name: "name",
+      username: "username",
+    },
+  };
+  const mockHandler = jest.fn();
+
+  const component = render(
+    <Blog
+      blog={blog}
+      loggedUser={{ username: "username" }}
+      handleLikeClick={mockHandler}
+      handleDelete={jest.fn()}
+    />
+  );
+
+  const button = component.getByText("view");
+  fireEvent.click(button);
+
+  const likeButton = component.getByRole("button", { name: "like" });
+  fireEvent.click(likeButton);
+  fireEvent.click(likeButton);
+
+  expect(mockHandler.mock.calls).toHaveLength(2);
+});
