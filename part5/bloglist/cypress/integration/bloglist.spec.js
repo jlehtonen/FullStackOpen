@@ -74,6 +74,17 @@ describe("Bloglist app", function () {
         cy.get("button").contains("like").click();
         cy.get("#like-count").contains("1").should("exist");
       });
+
+      it("it can be removed by the user that added it", function () {
+        cy.get("div").contains("blog title blog author").find("button").click();
+        cy.get("div")
+          .contains("blog title blog author")
+          .parent()
+          .find("button")
+          .contains("remove")
+          .click();
+        cy.get("div").contains("blog title blog author").should("not.exist");
+      });
     });
   });
 });
