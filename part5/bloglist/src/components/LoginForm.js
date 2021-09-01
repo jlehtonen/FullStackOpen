@@ -13,7 +13,7 @@ const LoginForm = ({
     <div>
       <h2>Log in to application</h2>
       <Notification message={notification} type={notificationType} />
-      <form onSubmit={handleSubmit}>
+      <form id="login-form" onSubmit={handleSubmit}>
         <div>
           username
           <input
