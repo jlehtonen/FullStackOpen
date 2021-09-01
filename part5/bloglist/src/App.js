@@ -75,6 +75,13 @@ const App = () => {
     );
   };
 
+  const handleBlogDelete = async blog => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      await blogService.remove(blog);
+      setBlogs(blogs.filter(b => b.id !== blog.id));
+    }
+  };
+
   if (user === null) {
     return (
       <LoginForm
@@ -100,6 +107,8 @@ const App = () => {
       <BlogList
         blogs={blogs.sort((a, b) => b.likes - a.likes)}
         handleLikeClick={handleLikeClick}
+        loggedUser={user}
+        handleDelete={handleBlogDelete}
       />
     </div>
   );
