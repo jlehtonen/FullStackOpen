@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import LoginForm from "./components/LoginForm";
 import BlogList from "./components/BlogList";
 import NewBlogForm from "./components/NewBlogForm";
 import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 import LoggedIndicator from "./components/LoggedIndicator";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -14,6 +15,7 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [notification, setNotification] = useState(null);
   const [notificationType, setNotificationType] = useState(null);
+  const newBlogFormRef = useRef();
 
   const showNotification = (message, type = "success") => {
     setNotificationType(type);
@@ -58,6 +60,7 @@ const App = () => {
   };
 
   const handleNewBlog = async (title, author, url) => {
+    newBlogFormRef.current.toggleVisibility();
     const blog = await blogService.create(title, author, url);
     setBlogs([...blogs, blog]);
     showNotification(`a new blog ${blog.title} by ${blog.author} added`);
@@ -82,7 +85,9 @@ const App = () => {
       <h2>blogs</h2>
       <Notification message={notification} type={notificationType} />
       <LoggedIndicator user={user} handleLogout={handleLogout} />
-      <NewBlogForm handleSubmit={handleNewBlog} />
+      <Togglable buttonLabel="create new blog" ref={newBlogFormRef}>
+        <NewBlogForm handleSubmit={handleNewBlog} />
+      </Togglable>
       <BlogList blogs={blogs} />
     </div>
   );
