@@ -28,4 +28,26 @@ describe("Bloglist app", function () {
       cy.get("#login-form").should("exist");
     });
   });
+
+  describe("When logged in", function () {
+    beforeEach(function () {
+      cy.request("POST", "http://localhost:3001/api/login", {
+        username: "username",
+        password: "password",
+      }).then(response => {
+        localStorage.setItem("loggedBloglistUser", JSON.stringify(response.body));
+        cy.visit("http://localhost:3000");
+      });
+    });
+
+    it("A blog can be created", function () {
+      cy.wait(100);
+      cy.get("button").contains("create new blog").click();
+      cy.get("#title").type("blog title");
+      cy.get("#author").type("blog author");
+      cy.get("#url").type("blog url");
+      cy.get("button[type=submit]").click();
+      cy.get("div").contains("blog title blog author").should("exist");
+    });
+  });
 });
