@@ -8,6 +8,9 @@ const NewBlogForm = ({ handleSubmit }) => {
   const handleFormSubmit = event => {
     event.preventDefault();
     handleSubmit(title, author, url);
+    setTitle("");
+    setAuthor("");
+    setUrl("");
   };
 
   return (
