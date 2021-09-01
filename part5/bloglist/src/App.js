@@ -57,7 +57,6 @@ const App = () => {
   };
 
   const handleNewBlog = async (title, author, url) => {
-    console.log(title, author, url);
     const blog = await blogService.create(title, author, url);
     setBlogs([...blogs, blog]);
     showNotification(`a new blog ${blog.title} by ${blog.author} added`);
