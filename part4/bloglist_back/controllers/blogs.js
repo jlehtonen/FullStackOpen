@@ -1,8 +1,5 @@
-const config = require("../utils/config");
-const jwt = require("jsonwebtoken");
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
-const User = require("../models/user");
 
 blogsRouter.get("/", async (req, res) => {
   const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
@@ -10,16 +7,10 @@ blogsRouter.get("/", async (req, res) => {
 });
 
 blogsRouter.post("/", async (req, res) => {
-  if (!req.token) {
-    return res.status(401).json({ error: "token missing" });
+  const user = req.user;
+  if (!user) {
+    return res.status(401).json({ error: "token missing or invalid" });
   }
-
-  const decodedToken = jwt.verify(req.token, config.SECRET);
-  if (!decodedToken.id) {
-    return res.status(401).json({ error: "invalid token" });
-  }
-
-  const user = await User.findById(decodedToken.id);
 
   if (!req.body.hasOwnProperty("title") || !req.body.hasOwnProperty("url")) {
     return res.status(400).end();
@@ -38,17 +29,7 @@ blogsRouter.delete("/:id", async (req, res) => {
     return res.status(204).end();
   }
 
-  if (!req.token) {
-    return res.status(401).json({ error: "token missing" });
-  }
-
-  const decodedToken = jwt.verify(req.token, config.SECRET);
-  if (!decodedToken.id) {
-    return res.status(401).json({ error: "invalid token" });
-  }
-
-  const user = await User.findById(decodedToken.id);
-
+  const user = req.user;
   if (!user || blog.user.toString() !== user._id.toString()) {
     return res.status(401).end();
   }
