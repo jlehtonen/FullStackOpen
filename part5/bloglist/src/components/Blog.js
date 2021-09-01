@@ -14,7 +14,7 @@ const Blog = ({ blog, handleLikeClick, loggedUser, handleDelete }) => {
 
   if (!isExpanded) {
     return (
-      <div style={styles}>
+      <div style={styles} className="blog">
         {blog.title} {blog.author}{" "}
         <button onClick={() => setIsExpanded(true)}>view</button>
       </div>
@@ -22,7 +22,7 @@ const Blog = ({ blog, handleLikeClick, loggedUser, handleDelete }) => {
   }
 
   return (
-    <div style={styles}>
+    <div style={styles} className="blog">
       <div>
         {blog.title} {blog.author}{" "}
         <button onClick={() => setIsExpanded(false)}>hide</button>

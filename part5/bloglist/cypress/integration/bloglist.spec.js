@@ -86,5 +86,67 @@ describe("Bloglist app", function () {
         cy.get("div").contains("blog title blog author").should("not.exist");
       });
     });
+
+    describe("When three blogs have been created", function () {
+      beforeEach(function () {
+        const getRequestOptions = blogName => ({
+          method: "POST",
+          url: "http://localhost:3001/api/blogs",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            title: `title-${blogName}`,
+            author: `author-${blogName}`,
+            url: `url-${blogName}`,
+          },
+        });
+        const token = JSON.parse(localStorage.getItem("loggedBloglistUser")).token;
+        cy.request(getRequestOptions("1"));
+        cy.request(getRequestOptions("2"));
+        cy.request(getRequestOptions("3"));
+        cy.visit("http://localhost:3000");
+      });
+
+      it("blogs are shown in the order from most to least liked", function () {
+        cy.get("div")
+          .contains("title-2 author-2")
+          .find("button")
+          .contains("view")
+          .click();
+        cy.get("div")
+          .contains("title-2 author-2")
+          .parent()
+          .find("button")
+          .contains("like")
+          .click();
+        cy.wait(100);
+        cy.get("div")
+          .contains("title-2 author-2")
+          .parent()
+          .find("button")
+          .contains("like")
+          .click();
+
+        cy.get("div")
+          .contains("title-3 author-3")
+          .find("button")
+          .contains("view")
+          .click();
+        cy.get("div")
+          .contains("title-3 author-3")
+          .parent()
+          .find("button")
+          .contains("like")
+          .click();
+
+        cy.wait(100);
+        cy.get(".blog").then(blogs => {
+          expect(blogs[0]).to.contain("title-2");
+          expect(blogs[1]).to.contain("title-3");
+          expect(blogs[2]).to.contain("title-1");
+        });
+      });
+    });
   });
 });
