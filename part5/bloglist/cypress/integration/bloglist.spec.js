@@ -49,5 +49,31 @@ describe("Bloglist app", function () {
       cy.get("button[type=submit]").click();
       cy.get("div").contains("blog title blog author").should("exist");
     });
+
+    describe("When a blog has been created", function () {
+      beforeEach(function () {
+        const token = JSON.parse(localStorage.getItem("loggedBloglistUser")).token;
+        cy.request({
+          method: "POST",
+          url: "http://localhost:3001/api/blogs",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            title: "blog title",
+            author: "blog author",
+            url: "blog url",
+          },
+        });
+        cy.visit("http://localhost:3000");
+      });
+
+      it("it can be liked", function () {
+        cy.get("div").contains("blog title blog author").should("exist");
+        cy.get("button").contains("view").click();
+        cy.get("button").contains("like").click();
+        cy.get("#like-count").contains("1").should("exist");
+      });
+    });
   });
 });
