@@ -1,14 +1,45 @@
+const config = require("../utils/config");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const helper = require("./test_helper");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 const api = supertest(app);
 
+const initialUser = {
+  username: "user",
+  name: "name",
+  password: "pass",
+};
+
+const getToken = async () => {
+  const user = await User.findOne({ username: initialUser.username });
+
+  const userForToken = {
+    username: user.username,
+    id: user._id,
+  };
+
+  return jwt.sign(userForToken, config.SECRET);
+};
+
 beforeEach(async () => {
+  await User.deleteMany({});
   await Blog.deleteMany({});
-  await Blog.insertMany(helper.initialBlogs);
+
+  const user = new User(initialUser);
+  const savedUser = await user.save();
+
+  for (const blogData of helper.initialBlogs) {
+    const blog = new Blog({ ...blogData, user: savedUser._id });
+    const savedBlog = await blog.save();
+    savedUser.blogs = [...savedUser.blogs, savedBlog._id];
+  }
+
+  await savedUser.save();
 });
 
 test("GET /api/blogs returns correct number of blogs in JSON format", async () => {
@@ -34,7 +65,8 @@ test("POST /api/blogs increases the number of blogs by one", async () => {
     likes: 12,
   };
 
-  await api.post("/api/blogs").send(newBlog);
+  const token = await getToken();
+  await api.post("/api/blogs").set("Authorization", `Bearer ${token}`).send(newBlog);
   expect(await helper.blogsInDb()).toHaveLength(helper.initialBlogs.length + 1);
 });
 
@@ -45,7 +77,8 @@ test("likes default to 0 on new blogs if there is no likes field in the POST pay
     url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
   };
 
-  await api.post("/api/blogs").send(newBlog);
+  const token = await getToken();
+  await api.post("/api/blogs").set("Authorization", `Bearer ${token}`).send(newBlog);
   const blogsInDb = await helper.blogsInDb();
   const addedBlog = blogsInDb.find(blog => blog.title === newBlog.title);
   expect(addedBlog.likes).toBe(0);
@@ -58,7 +91,12 @@ test("POST /api/blogs fails with status code 400 if the payload doesn't have a t
     likes: 12,
   };
 
-  await api.post("/api/blogs").send(newBlog).expect(400);
+  const token = await getToken();
+  await api
+    .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
+    .send(newBlog)
+    .expect(400);
 });
 
 test("POST /api/blogs fails with status code 400 if the payload doesn't have a url field", async () => {
@@ -68,12 +106,30 @@ test("POST /api/blogs fails with status code 400 if the payload doesn't have a u
     likes: 12,
   };
 
-  await api.post("/api/blogs").send(newBlog).expect(400);
+  const token = await getToken();
+  await api
+    .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
+    .send(newBlog)
+    .expect(400);
+});
+
+test("POST /api/blogs fails with status code 401 if auth token is missing", async () => {
+  const newBlog = {
+    title: "Canonical string reduction",
+    author: "Edsger W. Dijkstra",
+    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+    likes: 12,
+  };
+
+  await api.post("/api/blogs").send(newBlog).expect(401);
+  expect(await helper.blogsInDb()).toHaveLength(helper.initialBlogs.length);
 });
 
 test("Deleting an existing blog causes the number of blogs to decrease by one", async () => {
   const blog = await helper.getBlogByTitle(helper.initialBlogs[0].title);
-  await api.delete(`/api/blogs/${blog.id}`);
+  const token = await getToken();
+  await api.delete(`/api/blogs/${blog.id}`).set("Authorization", `Bearer ${token}`);
   expect(await helper.blogsInDb()).toHaveLength(helper.initialBlogs.length - 1);
 });
 
