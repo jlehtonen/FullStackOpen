@@ -66,6 +66,15 @@ const App = () => {
     showNotification(`a new blog ${blog.title} by ${blog.author} added`);
   };
 
+  const handleLikeClick = async blog => {
+    const likedBlog = await blogService.like(blog);
+    setBlogs(
+      blogs.map(blog =>
+        blog.id === likedBlog.id ? { ...blog, likes: likedBlog.likes } : blog
+      )
+    );
+  };
+
   if (user === null) {
     return (
       <LoginForm
@@ -88,7 +97,7 @@ const App = () => {
       <Togglable buttonLabel="create new blog" ref={newBlogFormRef}>
         <NewBlogForm handleSubmit={handleNewBlog} />
       </Togglable>
-      <BlogList blogs={blogs} />
+      <BlogList blogs={blogs} handleLikeClick={handleLikeClick} />
     </div>
   );
 };
