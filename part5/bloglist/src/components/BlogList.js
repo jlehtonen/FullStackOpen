@@ -1,4 +1,5 @@
 import Blog from "./Blog";
+import PropTypes from "prop-types";
 
 const BlogList = ({ blogs, handleLikeClick, loggedUser, handleDelete }) => {
   return (
@@ -14,6 +15,13 @@ const BlogList = ({ blogs, handleLikeClick, loggedUser, handleDelete }) => {
       ))}
     </div>
   );
+};
+
+BlogList.propTypes = {
+  blogs: PropTypes.array.isRequired,
+  loggedUser: PropTypes.object.isRequired,
+  handleLikeClick: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
 };
 
 export default BlogList;
