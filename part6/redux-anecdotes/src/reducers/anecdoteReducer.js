@@ -2,10 +2,10 @@ import anecdoteService from "../services/anecdotes";
 
 const reducer = (state = [], action) => {
   switch (action.type) {
-    case "VOTE":
-      const id = action.data.id;
+    case "REPLACE_ANECDOTE":
+      const id = action.data.anecdote.id;
       return state.map(anecdote =>
-        anecdote.id !== id ? anecdote : { ...anecdote, votes: anecdote.votes + 1 }
+        anecdote.id !== id ? anecdote : action.data.anecdote
       );
     case "CREATE":
       return [...state, action.data.anecdote];
@@ -16,11 +16,12 @@ const reducer = (state = [], action) => {
   }
 };
 
-export const vote = id => {
-  return {
-    type: "VOTE",
-    data: { id },
-  };
+export const vote = anecdote => async dispatch => {
+  const votedAnecdote = await anecdoteService.vote(anecdote);
+  return dispatch({
+    type: "REPLACE_ANECDOTE",
+    data: { anecdote: votedAnecdote },
+  });
 };
 
 export const create = content => async dispatch => {
