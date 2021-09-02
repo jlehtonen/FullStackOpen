@@ -1,15 +1,5 @@
 import anecdoteService from "../services/anecdotes";
 
-const getId = () => (100000 * Math.random()).toFixed(0);
-
-const asObject = anecdote => {
-  return {
-    content: anecdote,
-    id: getId(),
-    votes: 0,
-  };
-};
-
 const reducer = (state = [], action) => {
   switch (action.type) {
     case "VOTE":
@@ -18,7 +8,7 @@ const reducer = (state = [], action) => {
         anecdote.id !== id ? anecdote : { ...anecdote, votes: anecdote.votes + 1 }
       );
     case "CREATE":
-      return [...state, asObject(action.data.content)];
+      return [...state, action.data.anecdote];
     case "INIT_ANECDOTES":
       return action.data;
     default:
@@ -33,11 +23,12 @@ export const vote = id => {
   };
 };
 
-export const create = content => {
-  return {
+export const create = content => async dispatch => {
+  const addedAnecdote = await anecdoteService.create(content);
+  return dispatch({
     type: "CREATE",
-    data: { content },
-  };
+    data: { anecdote: addedAnecdote },
+  });
 };
 
 export const initializeAnecdotes = () => async dispatch => {
