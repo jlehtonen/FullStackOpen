@@ -8,6 +8,7 @@ import { Switch, Route, useRouteMatch } from "react-router-dom";
 import UsersPage from "./components/UsersPage";
 import UserPage from "./components/UserPage";
 import HomePage from "./components/HomePage";
+import BlogPage from "./components/BlogPage";
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import LoggedIndicator from "./components/LoggedIndicator";
@@ -20,6 +21,9 @@ const App = () => {
 
   const userMatch = useRouteMatch("/users/:id");
   const user = userMatch ? users.find(user => user.id === userMatch.params.id) : null;
+
+  const blogMatch = useRouteMatch("/blogs/:id");
+  const blog = blogMatch ? blogs.find(blog => blog.id === blogMatch.params.id) : null;
 
   useEffect(() => {
     dispatch(initializeBlogs());
@@ -46,8 +50,11 @@ const App = () => {
         <Route path="/users">
           <UsersPage />
         </Route>
+        <Route path="/blogs/:id">
+          <BlogPage blog={blog} />
+        </Route>
         <Route>
-          <HomePage blogs={blogs} user={loggedUser} />
+          <HomePage blogs={blogs} />
         </Route>
       </Switch>
     </div>
