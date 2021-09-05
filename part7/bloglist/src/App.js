@@ -1,19 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setNotification } from "./reducers/notificationReducer";
-import {
-  initializeBlogs,
-  createBlog,
-  likeBlog,
-  deleteBlog,
-} from "./reducers/blogReducer";
+import { initializeBlogs } from "./reducers/blogReducer";
 import { login, logout } from "./reducers/userReducer";
+import { initializeUsers } from "./reducers/usersReducer";
+import { Switch, Route } from "react-router-dom";
 
+import UsersPage from "./components/UsersPage";
+import HomePage from "./components/HomePage";
 import LoginForm from "./components/LoginForm";
-import BlogList from "./components/BlogList";
-import NewBlogForm from "./components/NewBlogForm";
 import Notification from "./components/Notification";
-import Togglable from "./components/Togglable";
 import LoggedIndicator from "./components/LoggedIndicator";
 
 const App = () => {
@@ -22,10 +17,10 @@ const App = () => {
   const user = useSelector(state => state.user);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const newBlogFormRef = useRef();
 
   useEffect(() => {
     dispatch(initializeBlogs());
+    dispatch(initializeUsers());
   }, []);
 
   const handleLogin = async event => {
@@ -35,22 +30,6 @@ const App = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-  };
-
-  const handleNewBlog = (title, author, url) => {
-    newBlogFormRef.current.toggleVisibility();
-    dispatch(createBlog(title, author, url));
-    dispatch(setNotification(`a new blog ${title} by ${author} added`));
-  };
-
-  const handleLikeClick = blog => {
-    dispatch(likeBlog(blog));
-  };
-
-  const handleBlogDelete = blog => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      dispatch(deleteBlog(blog));
-    }
   };
 
   if (user === null) {
@@ -70,15 +49,14 @@ const App = () => {
       <h2>blogs</h2>
       <Notification />
       <LoggedIndicator user={user} handleLogout={handleLogout} />
-      <Togglable buttonLabel="create new blog" ref={newBlogFormRef}>
-        <NewBlogForm handleSubmit={handleNewBlog} />
-      </Togglable>
-      <BlogList
-        blogs={blogs.sort((a, b) => b.likes - a.likes)}
-        handleLikeClick={handleLikeClick}
-        loggedUser={user}
-        handleDelete={handleBlogDelete}
-      />
+      <Switch>
+        <Route path="/users">
+          <UsersPage />
+        </Route>
+        <Route>
+          <HomePage blogs={blogs} user={user} />
+        </Route>
+      </Switch>
     </div>
   );
 };
