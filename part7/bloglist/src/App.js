@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { setNotification } from "./reducers/notificationReducer";
+
 import LoginForm from "./components/LoginForm";
 import BlogList from "./components/BlogList";
 import NewBlogForm from "./components/NewBlogForm";
@@ -9,22 +12,12 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 
 const App = () => {
+  const dispatch = useDispatch();
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [notification, setNotification] = useState(null);
-  const [notificationType, setNotificationType] = useState(null);
   const newBlogFormRef = useRef();
-
-  const showNotification = (message, type = "success") => {
-    setNotificationType(type);
-    setNotification(message);
-    setTimeout(() => {
-      setNotification(null);
-      setNotificationType(null);
-    }, 5000);
-  };
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs));
@@ -50,7 +43,7 @@ const App = () => {
       setUsername("");
       setPassword("");
     } catch (exception) {
-      showNotification("wrong username or password", "error");
+      dispatch(setNotification("wrong username or password", "error"));
     }
   };
 
@@ -63,7 +56,7 @@ const App = () => {
     newBlogFormRef.current.toggleVisibility();
     const blog = await blogService.create(title, author, url);
     setBlogs([...blogs, blog]);
-    showNotification(`a new blog ${blog.title} by ${blog.author} added`);
+    dispatch(setNotification(`a new blog ${blog.title} by ${blog.author} added`));
   };
 
   const handleLikeClick = async blog => {
@@ -90,8 +83,6 @@ const App = () => {
         handleUsernameChange={({ target }) => setUsername(target.value)}
         handlePasswordChange={({ target }) => setPassword(target.value)}
         handleSubmit={handleLogin}
-        notification={notification}
-        notificationType={notificationType}
       />
     );
   }
@@ -99,7 +90,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={notification} type={notificationType} />
+      <Notification />
       <LoggedIndicator user={user} handleLogout={handleLogout} />
       <Togglable buttonLabel="create new blog" ref={newBlogFormRef}>
         <NewBlogForm handleSubmit={handleNewBlog} />
