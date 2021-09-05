@@ -1,3 +1,16 @@
+import styled from "styled-components";
+import BlogList from "./BlogList";
+
+const Title = styled.h2`
+  color: #444;
+  margin-bottom: 2rem;
+`;
+
+const Subtitle = styled.h3`
+  color: #444;
+  margin-bottom: 1rem;
+`;
+
 const UserPage = ({ user }) => {
   if (!user) {
     return null;
@@ -5,13 +18,9 @@ const UserPage = ({ user }) => {
 
   return (
     <div>
-      <h2>{user.name}</h2>
-      <h3>added blogs</h3>
-      <ul>
-        {user.blogs.map(blog => (
-          <li key={blog.id}>{blog.title}</li>
-        ))}
-      </ul>
+      <Title>{user.name}</Title>
+      <Subtitle>Added blogs</Subtitle>
+      <BlogList blogs={user.blogs} />
     </div>
   );
 };

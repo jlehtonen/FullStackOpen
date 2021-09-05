@@ -5,6 +5,15 @@ import NewBlogForm from "./NewBlogForm";
 import BlogList from "./BlogList";
 import { createBlog } from "../reducers/blogReducer";
 import { setNotification } from "../reducers/notificationReducer";
+import styled from "styled-components";
+
+const FormContainer = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const Title = styled.h2`
+  margin-bottom: 1rem;
+`;
 
 const HomePage = ({ blogs }) => {
   const dispatch = useDispatch();
@@ -18,9 +27,12 @@ const HomePage = ({ blogs }) => {
 
   return (
     <div>
-      <Togglable buttonLabel="create new blog" ref={newBlogFormRef}>
-        <NewBlogForm handleSubmit={handleNewBlog} />
-      </Togglable>
+      <FormContainer>
+        <Togglable buttonLabel="Add a new blog" ref={newBlogFormRef}>
+          <Title>Add a new blog</Title>
+          <NewBlogForm handleSubmit={handleNewBlog} />
+        </Togglable>
+      </FormContainer>
       <BlogList blogs={blogs.sort((a, b) => b.likes - a.likes)} />
     </div>
   );

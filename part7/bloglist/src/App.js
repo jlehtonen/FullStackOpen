@@ -4,6 +4,7 @@ import { initializeBlogs } from "./reducers/blogReducer";
 import { logout } from "./reducers/userReducer";
 import { initializeUsers } from "./reducers/usersReducer";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
+import styled from "styled-components";
 
 import UsersPage from "./components/UsersPage";
 import UserPage from "./components/UserPage";
@@ -12,6 +13,11 @@ import BlogPage from "./components/BlogPage";
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import NavBar from "./components/NavBar";
+
+const Container = styled.div`
+  width: 50%;
+  margin: 6rem auto 0;
+`;
 
 const App = () => {
   const dispatch = useDispatch();
@@ -39,25 +45,26 @@ const App = () => {
   }
 
   return (
-    <div>
+    <>
       <NavBar user={loggedUser} handleLogout={handleLogout} />
-      <h2>blogs</h2>
-      <Notification />
-      <Switch>
-        <Route path="/users/:id">
-          <UserPage user={user} />
-        </Route>
-        <Route path="/users">
-          <UsersPage />
-        </Route>
-        <Route path="/blogs/:id">
-          <BlogPage blog={blog} />
-        </Route>
-        <Route>
-          <HomePage blogs={blogs} />
-        </Route>
-      </Switch>
-    </div>
+      <Container>
+        <Notification />
+        <Switch>
+          <Route path="/users/:id">
+            <UserPage user={user} />
+          </Route>
+          <Route path="/users">
+            <UsersPage />
+          </Route>
+          <Route path="/blogs/:id">
+            <BlogPage blog={blog} loggedUser={loggedUser} />
+          </Route>
+          <Route>
+            <HomePage blogs={blogs} />
+          </Route>
+        </Switch>
+      </Container>
+    </>
   );
 };
 

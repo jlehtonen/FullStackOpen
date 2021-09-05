@@ -1,17 +1,39 @@
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import styled from "styled-components";
+
+const Title = styled.h2`
+  color: #444;
+  margin-bottom: 2rem;
+`;
+
+const Link = styled(RouterLink)`
+  color: #6a1b9a;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0 1rem 0 0;
+  display: block;
+
+  :hover {
+    text-decoration: underline;
+  }
+`;
+
+const TableHeaderItem = styled.th`
+  color: #444;
+`;
 
 const UsersPage = () => {
   const users = useSelector(state => state.users);
 
   return (
     <div>
-      <h2>Users</h2>
+      <Title>Users</Title>
       <table>
         <thead>
           <tr>
             <th></th>
-            <th>blogs created</th>
+            <TableHeaderItem>Blogs created</TableHeaderItem>
           </tr>
         </thead>
         <tbody>

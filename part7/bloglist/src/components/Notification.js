@@ -1,23 +1,25 @@
 import { useSelector } from "react-redux";
+import styled from "styled-components";
+
+const Container = styled.div`
+  padding: 0.7rem;
+  border: 2px solid ${({ error }) => (error ? "#b50e0e" : "#136600")};
+  color: ${({ error }) => (error ? "#b50e0e" : "#136600")};
+  border-radius: 0.3rem;
+  background-color: ${({ error }) => (error ? "#ffe8e8" : "#d6ffcc")};
+  margin-bottom: 1rem;
+`;
 
 const Notification = () => {
   const notification = useSelector(state => state.notification);
-
-  const styles = {
-    color: notification.type === "success" ? "green" : "red",
-    background: "lightgrey",
-    fontSize: 20,
-    borderStyle: "solid",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  };
 
   if (!notification.message) {
     return null;
   }
 
-  return <div style={styles}>{notification.message}</div>;
+  return (
+    <Container error={notification.type === "error"}>{notification.message}</Container>
+  );
 };
 
 export default Notification;

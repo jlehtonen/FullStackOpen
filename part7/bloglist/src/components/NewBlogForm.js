@@ -1,45 +1,38 @@
-import { useState } from "react";
+import { setNotification } from "../reducers/notificationReducer";
+import { useDispatch } from "react-redux";
+import styled from "styled-components";
+import Field, { useField } from "./Field";
+import Button from "./Button";
+
+const Form = styled.form`
+  margin-bottom: 0.5rem;
+  max-width: 400px;
+`;
 
 const NewBlogForm = ({ handleSubmit }) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+  const [title, resetTitle] = useField("text");
+  const [author, resetAuthor] = useField("text");
+  const [url, resetUrl] = useField("text");
+  const dispatch = useDispatch();
 
   const handleFormSubmit = event => {
     event.preventDefault();
-    handleSubmit(title, author, url);
-    setTitle("");
-    setAuthor("");
-    setUrl("");
+    handleSubmit(title.value, author.value, url.value);
+    dispatch(setNotification(`A new blog '${title.value}' by ${author.value} added`));
+    resetTitle();
+    resetAuthor();
+    resetUrl();
   };
 
   return (
-    <div>
-      <h2>create new</h2>
-      <form onSubmit={handleFormSubmit}>
-        <div>
-          title:
-          <input
-            id="title"
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </div>
-        <div>
-          author:
-          <input
-            id="author"
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          url:
-          <input id="url" value={url} onChange={({ target }) => setUrl(target.value)} />
-        </div>
-        <button type="submit">create</button>
-      </form>
-    </div>
+    <Form onSubmit={handleFormSubmit}>
+      <Field label="Title" id="title" {...title} />
+      <Field label="Author" id="author" {...author} />
+      <Field label="Url" id="url" {...url} />
+      <Button fullwidth type="submit">
+        Add a blog
+      </Button>
+    </Form>
   );
 };
 
