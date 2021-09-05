@@ -1,11 +1,17 @@
 import { useDispatch } from "react-redux";
-import { likeBlog } from "../reducers/blogReducer";
+import { likeBlog, addComment } from "../reducers/blogReducer";
 
 const BlogPage = ({ blog }) => {
   const dispatch = useDispatch();
 
   const handleLike = () => {
     dispatch(likeBlog(blog));
+  };
+
+  const handleNewComment = event => {
+    event.preventDefault();
+    dispatch(addComment(blog.id, event.target.comment.value));
+    event.target.comment.value = "";
   };
 
   if (!blog) {
@@ -25,6 +31,10 @@ const BlogPage = ({ blog }) => {
       </div>
       <div>added by {blog.user.name}</div>
       <h3>comments</h3>
+      <form onSubmit={handleNewComment}>
+        <input type="text" name="comment" />
+        <button>add comment</button>
+      </form>
       <ul>
         {blog.comments.map(comment => (
           <li key={comment}>{comment}</li>

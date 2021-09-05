@@ -1,4 +1,5 @@
 import blogService from "../services/blogs";
+import commentService from "../services/comments";
 
 const reducer = (state = [], action) => {
   switch (action.type) {
@@ -12,6 +13,10 @@ const reducer = (state = [], action) => {
       );
     case "DELETE_BLOG":
       return state.filter(blog => blog.id !== action.data.id);
+    case "REPLACE_COMMENTS":
+      return state.map(blog =>
+        blog.id !== action.data.id ? blog : { ...blog, comments: action.data.comments }
+      );
     default:
       return state;
   }
@@ -46,6 +51,14 @@ export const deleteBlog = blog => async dispatch => {
   return dispatch({
     type: "DELETE_BLOG",
     data: { id: blog.id },
+  });
+};
+
+export const addComment = (id, comment) => async dispatch => {
+  const updatedComments = await commentService.create(id, comment);
+  return dispatch({
+    type: "REPLACE_COMMENTS",
+    data: { id, comments: updatedComments },
   });
 };
 
