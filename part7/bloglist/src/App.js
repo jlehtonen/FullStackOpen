@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "./reducers/notificationReducer";
-import { initializeBlogs, createBlog } from "./reducers/blogReducer";
+import {
+  initializeBlogs,
+  createBlog,
+  likeBlog,
+  deleteBlog,
+} from "./reducers/blogReducer";
 
 import LoginForm from "./components/LoginForm";
 import BlogList from "./components/BlogList";
@@ -59,20 +64,14 @@ const App = () => {
     dispatch(setNotification(`a new blog ${title} by ${author} added`));
   };
 
-  const handleLikeClick = async blog => {
-    // const likedBlog = await blogService.like(blog);
-    // setBlogs(
-    //   blogs.map(blog =>
-    //     blog.id === likedBlog.id ? { ...blog, likes: likedBlog.likes } : blog
-    //   )
-    // );
+  const handleLikeClick = blog => {
+    dispatch(likeBlog(blog));
   };
 
-  const handleBlogDelete = async blog => {
-    // if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-    //   await blogService.remove(blog);
-    //   setBlogs(blogs.filter(b => b.id !== blog.id));
-    // }
+  const handleBlogDelete = blog => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      dispatch(deleteBlog(blog));
+    }
   };
 
   if (user === null) {
