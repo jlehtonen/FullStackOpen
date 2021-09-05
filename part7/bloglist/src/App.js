@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "./reducers/notificationReducer";
+import { initializeBlogs, createBlog } from "./reducers/blogReducer";
 
 import LoginForm from "./components/LoginForm";
 import BlogList from "./components/BlogList";
@@ -13,14 +14,14 @@ import loginService from "./services/login";
 
 const App = () => {
   const dispatch = useDispatch();
-  const [blogs, setBlogs] = useState([]);
+  const blogs = useSelector(state => state.blogs);
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const newBlogFormRef = useRef();
 
   useEffect(() => {
-    blogService.getAll().then(blogs => setBlogs(blogs));
+    dispatch(initializeBlogs());
   }, []);
 
   useEffect(() => {
@@ -54,25 +55,24 @@ const App = () => {
 
   const handleNewBlog = async (title, author, url) => {
     newBlogFormRef.current.toggleVisibility();
-    const blog = await blogService.create(title, author, url);
-    setBlogs([...blogs, blog]);
-    dispatch(setNotification(`a new blog ${blog.title} by ${blog.author} added`));
+    dispatch(createBlog(title, author, url));
+    dispatch(setNotification(`a new blog ${title} by ${author} added`));
   };
 
   const handleLikeClick = async blog => {
-    const likedBlog = await blogService.like(blog);
-    setBlogs(
-      blogs.map(blog =>
-        blog.id === likedBlog.id ? { ...blog, likes: likedBlog.likes } : blog
-      )
-    );
+    // const likedBlog = await blogService.like(blog);
+    // setBlogs(
+    //   blogs.map(blog =>
+    //     blog.id === likedBlog.id ? { ...blog, likes: likedBlog.likes } : blog
+    //   )
+    // );
   };
 
   const handleBlogDelete = async blog => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.remove(blog);
-      setBlogs(blogs.filter(b => b.id !== blog.id));
-    }
+    // if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+    //   await blogService.remove(blog);
+    //   setBlogs(blogs.filter(b => b.id !== blog.id));
+    // }
   };
 
   if (user === null) {
