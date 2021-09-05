@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { initializeBlogs } from "./reducers/blogReducer";
 import { logout } from "./reducers/userReducer";
 import { initializeUsers } from "./reducers/usersReducer";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import UsersPage from "./components/UsersPage";
+import UserPage from "./components/UserPage";
 import HomePage from "./components/HomePage";
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
@@ -14,7 +15,11 @@ import LoggedIndicator from "./components/LoggedIndicator";
 const App = () => {
   const dispatch = useDispatch();
   const blogs = useSelector(state => state.blogs);
-  const user = useSelector(state => state.user);
+  const users = useSelector(state => state.users);
+  const loggedUser = useSelector(state => state.user);
+
+  const userMatch = useRouteMatch("/users/:id");
+  const user = userMatch ? users.find(user => user.id === userMatch.params.id) : null;
 
   useEffect(() => {
     dispatch(initializeBlogs());
@@ -25,7 +30,7 @@ const App = () => {
     dispatch(logout());
   };
 
-  if (user === null) {
+  if (loggedUser === null) {
     return <LoginForm />;
   }
 
@@ -33,13 +38,16 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification />
-      <LoggedIndicator user={user} handleLogout={handleLogout} />
+      <LoggedIndicator user={loggedUser} handleLogout={handleLogout} />
       <Switch>
+        <Route path="/users/:id">
+          <UserPage user={user} />
+        </Route>
         <Route path="/users">
           <UsersPage />
         </Route>
         <Route>
-          <HomePage blogs={blogs} user={user} />
+          <HomePage blogs={blogs} user={loggedUser} />
         </Route>
       </Switch>
     </div>
