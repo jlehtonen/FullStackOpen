@@ -11,7 +11,7 @@ import HomePage from "./components/HomePage";
 import BlogPage from "./components/BlogPage";
 import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
-import LoggedIndicator from "./components/LoggedIndicator";
+import NavBar from "./components/NavBar";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -40,9 +40,9 @@ const App = () => {
 
   return (
     <div>
+      <NavBar user={loggedUser} handleLogout={handleLogout} />
       <h2>blogs</h2>
       <Notification />
-      <LoggedIndicator user={loggedUser} handleLogout={handleLogout} />
       <Switch>
         <Route path="/users/:id">
           <UserPage user={user} />
