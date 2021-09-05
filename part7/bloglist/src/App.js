@@ -53,12 +53,12 @@ const App = () => {
     }
   };
 
-  const handleLogout = async => {
+  const handleLogout = () => {
     window.localStorage.removeItem("loggedBloglistUser");
     setUser(null);
   };
 
-  const handleNewBlog = async (title, author, url) => {
+  const handleNewBlog = (title, author, url) => {
     newBlogFormRef.current.toggleVisibility();
     dispatch(createBlog(title, author, url));
     dispatch(setNotification(`a new blog ${title} by ${author} added`));
