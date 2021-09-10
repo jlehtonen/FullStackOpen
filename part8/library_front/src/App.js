@@ -5,7 +5,7 @@ import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import Login from "./components/Login";
 import Recommendations from "./components/Recommendations";
-import { LOGGED_USER, BOOK_ADDED } from "./queries";
+import { LOGGED_USER, BOOK_ADDED, ALL_BOOKS } from "./queries";
 
 const App = () => {
   const [page, setPage] = useState("authors");
@@ -20,10 +20,22 @@ const App = () => {
     }
   }, []);
 
+  const updateCacheWith = addedBook => {
+    const includedIn = (set, object) => set.map(elem => elem.id).includes(object.id);
+    const dataInStore = client.readQuery({ query: ALL_BOOKS });
+    if (!includedIn(dataInStore.allBooks, addedBook)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks: [...dataInStore.allBooks, addedBook] },
+      });
+    }
+  };
+
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       const book = subscriptionData.data.bookAdded;
       window.alert(`The book '${book.title}' by ${book.author.name} was added`);
+      updateCacheWith(book);
     },
   });
 
