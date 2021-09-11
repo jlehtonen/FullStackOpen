@@ -1,3 +1,5 @@
+import { isNumber } from "./util";
+
 const calculateBmi = (height: number, weight: number): string => {
   const bmi = weight / Math.pow(height / 100, 2);
   if (bmi < 16) {
@@ -31,4 +33,29 @@ const calculateBmi = (height: number, weight: number): string => {
   return "Obese: class III (unhealthy weight)";
 };
 
-console.log(calculateBmi(180, 74));
+interface BmiCalculatorInput {
+  height: number;
+  weight: number;
+}
+
+const parseArguments = (args: Array<string>): BmiCalculatorInput => {
+  if (args.length !== 4) {
+    throw new Error(`Exactly 4 arguments required; found ${args.length}`);
+  }
+
+  if (isNumber(args[2]) && isNumber(args[3])) {
+    return {
+      height: Number(args[2]),
+      weight: Number(args[3]),
+    };
+  } else {
+    throw new Error("Provided values were not numbers");
+  }
+};
+
+try {
+  const { height, weight } = parseArguments(process.argv);
+  console.log(calculateBmi(height, weight));
+} catch (e) {
+  console.log(`Error, something bad happened, message: ${e.message}`);
+}

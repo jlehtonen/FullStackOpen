@@ -1,3 +1,5 @@
+import { isNumber } from "./util";
+
 type Rating = 1 | 2 | 3;
 
 type RatingDescription = "bad" | "not too bad but could be better" | "perfect";
@@ -39,4 +41,29 @@ const calculateExercises = (hours: Array<number>, target: number): ExerciseResul
   };
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+interface ExerciseCalculatorInput {
+  target: number;
+  hours: Array<number>;
+}
+
+const parseArguments = (args: Array<string>): ExerciseCalculatorInput => {
+  if (args.length < 4) {
+    throw new Error(`At least 4 arguments required; found ${args.length}`);
+  }
+
+  if (args.slice(2).every(isNumber)) {
+    return {
+      target: Number(args[2]),
+      hours: args.slice(3).map(Number),
+    };
+  } else {
+    throw new Error("Provided values were not numbers");
+  }
+};
+
+try {
+  const { target, hours } = parseArguments(process.argv);
+  console.log(calculateExercises(hours, target));
+} catch (e) {
+  console.log(`Error, something bad happened, message: ${e.message}`);
+}
