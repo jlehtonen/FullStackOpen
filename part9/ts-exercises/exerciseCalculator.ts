@@ -65,5 +65,7 @@ try {
   const { target, hours } = parseArguments(process.argv);
   console.log(calculateExercises(hours, target));
 } catch (e) {
-  console.log(`Error, something bad happened, message: ${e.message}`);
+  if (e instanceof Error) {
+    console.log(`Error, something bad happened, message: ${e.message}`);
+  }
 }
