@@ -1,5 +1,5 @@
 import { v1 as uuid } from "uuid";
-import patientData from "../../data/patients.json";
+import patientData from "../../data/patients";
 import { NonSensitivePatientData, Patient, NewPatient } from "../types";
 
 const getEntries = (): Array<NonSensitivePatientData> => {
@@ -24,7 +24,7 @@ const addPatient = (entry: NewPatient): Patient => {
 
 const getById = (id: string): Patient | undefined => {
   const patient = patientData.find(patient => patient.id === id);
-  return patient ? { ...patient, entries: [] } : undefined;
+  return patient;
 };
 
 export default {
